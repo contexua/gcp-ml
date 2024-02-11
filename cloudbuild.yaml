@@ -1,0 +1,40 @@
+
+steps:
+- name: 'bash'
+  args: ['echo', 'I am running in a private pool!']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'europe-west2-docker.pkg.dev/kevin-ml-15774/gcp-ml1/dfa9', '.']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'europe-west2-docker.pkg.dev/kevin-ml-15774/gcp-ml1/dfa9']
+
+- name: 'europe-west2-docker.pkg.dev/kevin-ml-15774/gcp-ml1/dfa9'
+  entrypoint: 'bash'
+  args:
+   - '-c'
+   - |
+      python -m pytest
+  
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+   - 'run'
+   - 'deploy'
+   - 'py-bq-load'
+   - '--image'
+   - 'europe-west2-docker.pkg.dev/kevin-ml-15774/gcp-ml1/dfa9'
+   - '--region'
+   - 'europe-west2'
+   - '--allow-unauthenticated'
+
+
+  #script: |
+  #  docker build -t europe-west2-docker.pkg.dev/kevin-ml-15774/gcp-ml1/dfa8 .
+images:
+- 'europe-west2-docker.pkg.dev/kevin-ml-15774/gcp-ml1/dfa9'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  pool:
+    name: 'projects/kevin-ml-15774/locations/europe-west2/workerPools/gcp-ml-sa-private-pool'
