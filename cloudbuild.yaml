@@ -1,7 +1,7 @@
 
 steps:
 - name: 'bash'
-  args: ['echo', 'I am running in a private pool!']
+  args: ['echo', 'I am running in a private pool! yesss']
 
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'europe-west2-docker.pkg.dev/kevin-ml-15774/gcp-ml1/dfa9', '.']
